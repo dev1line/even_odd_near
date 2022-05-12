@@ -1,0 +1,12 @@
+D:\RUST\even_odd\contract\target\debug\deps\borsh-acd5f76f45eba648.rmeta: C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src/lib.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\de\mod.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\de\hint.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\schema.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\schema_helpers.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\ser\mod.rs
+
+D:\RUST\even_odd\contract\target\debug\deps\libborsh-acd5f76f45eba648.rlib: C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src/lib.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\de\mod.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\de\hint.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\schema.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\schema_helpers.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\ser\mod.rs
+
+D:\RUST\even_odd\contract\target\debug\deps\borsh-acd5f76f45eba648.d: C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src/lib.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\de\mod.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\de\hint.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\schema.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\schema_helpers.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\ser\mod.rs
+
+C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src/lib.rs:
+C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\de\mod.rs:
+C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\de\hint.rs:
+C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\schema.rs:
+C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\schema_helpers.rs:
+C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-0.8.2\src\ser\mod.rs:

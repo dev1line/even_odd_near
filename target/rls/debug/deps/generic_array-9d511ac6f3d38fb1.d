@@ -1,0 +1,11 @@
+d:\RUST\even_odd\contract\target\rls\debug\deps\generic_array-9d511ac6f3d38fb1.rmeta: C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\lib.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\hex.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\impls.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\arr.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\functional.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\iter.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\sequence.rs
+
+d:\RUST\even_odd\contract\target\rls\debug\deps\generic_array-9d511ac6f3d38fb1.d: C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\lib.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\hex.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\impls.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\arr.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\functional.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\iter.rs C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\sequence.rs
+
+C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\lib.rs:
+C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\hex.rs:
+C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\impls.rs:
+C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\arr.rs:
+C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\functional.rs:
+C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\iter.rs:
+C:\Users\sang.nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\generic-array-0.12.3\src\sequence.rs:
