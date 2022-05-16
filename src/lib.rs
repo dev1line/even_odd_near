@@ -12,7 +12,7 @@ use near_sdk::collections::{UnorderedMap};
 
 use near_sdk::json_types::{ValidAccountId, U128};
 use near_sdk::serde::{Deserialize, Serialize};
-use near_sdk::{env, near_bindgen, setup_alloc, AccountId, Balance, PanicOnDefault};
+use near_sdk::{env, near_bindgen, setup_alloc, AccountId, Balance, PanicOnDefault, ext_contract};
 use rand::Rng;
 
 pub mod ticket;
@@ -25,6 +25,50 @@ setup_alloc!();
 
 const TOTAL_SUPPLY: Balance = 1_000_000_000_000_000;
 
+// #[ext_contract[ext_cash_resolver]]
+// pub trait TokenCashResolver {
+//     fn ft_resolve_transfer(
+//         &mut self,
+//         sender_id: ValidAccountId,
+//         receiver_id: ValidAccountId,
+//         amount: U128,
+//     ) -> U128;
+// }
+#[ext_contract[ext_ticket]]
+pub trait TokenTicket {
+    fn nft_total_supply(self) -> U128;
+    fn nft_tokens(
+        &self,
+        from_index: Option<U128>, // default: "0"
+        limit: Option<u64>,       // default: unlimited (could fail due to gas limit)
+    ) -> Vec<Token>;
+    fn nft_supply_for_owner(self, account_id: ValidAccountId) -> U128;
+    fn nft_tokens_for_owner(
+        &self,
+        account_id: ValidAccountId,
+        from_index: Option<U128>, // default: "0"
+        limit: Option<u64>,       // default: unlimited (could fail due to gas limit)
+    ) -> Vec<Token>;
+}
+#[ext_contract[ext_cash]]
+pub trait TokenCash {
+    fn ft_transfer(&mut self, receiver_id: ValidAccountId, amount: U128, memo: Option<String>);
+    fn ft_transfer_call(
+        &mut self,
+        receiver_id: ValidAccountId,
+        amount: U128,
+        memo: Option<String>,
+        msg: String,
+    ) -> PromiseOrValue<U128>;
+    fn ft_total_supply(&self) -> U128;
+    fn ft_balance_of(&self, account_id: ValidAccountId) -> U128;
+    fn ft_resolve_transfer(
+        &mut self,
+        sender_id: ValidAccountId,
+        receiver_id: ValidAccountId,
+        amount: U128,
+    ) -> U128;
+}
 
 
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize, PanicOnDefault)]
@@ -40,7 +84,7 @@ pub struct PlayerMetadata {
 pub struct EvenOddContract {
     owner: ValidAccountId,
     cash: Token,
-    ticket: Ticket,
+    ticket: AccountId,
     players_array: Vec<AccountId>,
     players: UnorderedMap<AccountId, PlayerMetadata>,
     total_bet_amount: usize,
@@ -51,16 +95,13 @@ pub struct EvenOddContract {
 #[near_bindgen]
 impl EvenOddContract {
     #[init]
-    pub fn constructor() -> Self {
+    pub fn constructor(_dealer: AccountId, _cash: AccountId, _ticket: AccountId) -> Self {
         use near_sdk::env::signer_account_id;
         assert!(!env::state_exists(), "The contract is already initialized");
         Self {
             owner: signer_account_id().try_into().unwrap(),
-            cash: Token::new_default_meta(
-                signer_account_id().try_into().unwrap(),
-                TOTAL_SUPPLY.into(),
-            ),
-            ticket: Ticket::new_default_meta(signer_account_id().try_into().unwrap()),
+            cash: Token::new_default_meta(signer_account_id().try_into().unwrap(),TOTAL_SUPPLY.into()),
+            ticket: _ticket,//Ticket::new_default_meta(signer_account_id().try_into().unwrap())
             players_array: Vec::new(),
             players: UnorderedMap::new(b"players".to_vec()),
             total_bet_amount: 0,
@@ -71,7 +112,6 @@ impl EvenOddContract {
 
     #[payable]
     pub fn transfer(&mut self, amount: U128) {
-        // assert!()
         use near_sdk::env::{current_account_id, predecessor_account_id};
         self.cash.ft_resolve_transfer(
             predecessor_account_id().try_into().unwrap(),
@@ -102,7 +142,7 @@ impl EvenOddContract {
     pub fn bet(&self, is_even: bool, amount: U128) {
         // let account_balance = env::account_balance();
         // let token_id = 
-        let balance = u128::from(Ticket::default().nft_supply_for_owner(predecessor_account_id().try_into().unwrap()));
+        let balance = ext_ticket::nft_supply_for_owner(predecessor_account_id().try_into().unwrap(),&current_account_id().try_into().unwrap(),0,25_000_000_000_000);
         assert_gt!(balance, 0, "You need to buy a ticket to play this game");
         // assert_le!(env::block_timestamp(), self.ticket.get_expired_time(token_id), "Your ticket is expired");
         assert!(!self.is_already_bet(predecessor_account_id()) == true, "Already bet");
