@@ -15,7 +15,7 @@ NOTES:
   - To prevent the deployed contract from being modified or deleted, it should not have any access
     keys on its account.
 */
-use near_contract_standards::non_fungible_token::enumeration::NonFungibleTokenEnumeration;
+// use near_contract_standards::non_fungible_token::enumeration::NonFungibleTokenEnumeration;
 use near_contract_standards::non_fungible_token::metadata::{
     NFTContractMetadata, NonFungibleTokenMetadataProvider, TokenMetadata, NFT_METADATA_SPEC,
 };
@@ -124,27 +124,27 @@ impl NonFungibleTokenMetadataProvider for Ticket {
     }
 }
 
-#[near_bindgen]
-impl NonFungibleTokenEnumeration for Ticket {
-    fn nft_total_supply(self, ) -> U128 {
-        self.token_of_owner.get()
-    };
+// #[near_bindgen]
+// impl NonFungibleTokenEnumeration for Ticket {
+//     fn nft_total_supply(self, ) -> U128 {
+//         self.token_of_owner.get()
+//     };
 
-    fn nft_tokens(
-        &self,
-        from_index: Option<U128>, // default: "0"
-        limit: Option<u64>,       // default: unlimited (could fail due to gas limit)
-    ) -> Vec<Token>;
+//     fn nft_tokens(
+//         &self,
+//         from_index: Option<U128>, // default: "0"
+//         limit: Option<u64>,       // default: unlimited (could fail due to gas limit)
+//     ) -> Vec<Token>;
 
-    fn nft_supply_for_owner(self, account_id: ValidAccountId) -> U128;
+//     fn nft_supply_for_owner(self, account_id: ValidAccountId) -> U128;
 
-    fn nft_tokens_for_owner(
-        &self,
-        account_id: ValidAccountId,
-        from_index: Option<U128>, // default: "0"
-        limit: Option<u64>,       // default: unlimited (could fail due to gas limit)
-    ) -> Vec<Token>;
-}
+//     fn nft_tokens_for_owner(
+//         &self,
+//         account_id: ValidAccountId,
+//         from_index: Option<U128>, // default: "0"
+//         limit: Option<u64>,       // default: unlimited (could fail due to gas limit)
+//     ) -> Vec<Token>;
+// }
 
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod tests {
