@@ -1,2 +1,4 @@
 ./node_module
-./target
+.even-odd/target
+.nft-ticket/target
+.ft-cash/target
