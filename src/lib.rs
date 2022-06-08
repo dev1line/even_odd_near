@@ -1,31 +1,31 @@
-use more_asserts::{assert_le, assert_gt};
+use more_asserts::{assert_gt, assert_le};
 use near_contract_standards::fungible_token::core::FungibleTokenCore;
 use near_contract_standards::fungible_token::resolver::FungibleTokenResolver;
 use near_contract_standards::non_fungible_token::enumeration::NonFungibleTokenEnumeration;
 // use near_contract_standards::non_fungible_token::enumeration::NonFungibleTokenEnumeration;
-use near_sdk::env::{current_account_id, predecessor_account_id};
+use near_sdk::env::{current_account_id, predecessor_account_id, signer_account_id};
 use std::convert::TryInto;
 // use near_contract_standards::non_fungible_token::metadata::TokenMetadata;
 // use near_contract_standards::non_fungible_token::{Token, TokenId};
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::collections::{UnorderedMap};
+use near_sdk::collections::UnorderedMap;
 
 use near_sdk::json_types::{ValidAccountId, U128};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{env, near_bindgen, setup_alloc, AccountId, Balance, PanicOnDefault};
 use rand::Rng;
 
+pub mod core_impl;
 pub mod ticket;
 pub mod token;
-use ticket::Ticket;
-use token::Token;
 
-
+use core_impl::*;
+use ticket::*;
+use token::*;
 setup_alloc!();
 
-const TOTAL_SUPPLY: Balance = 1_000_000_000_000_000;
-
-
+const TOTAL_SUPPLY: Balance = 1_000_000_000;
+const PRICE_PER_BET: Balance = 10_000_000_000_000_000_000_000; // 0.01 NEAR
 
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize, PanicOnDefault)]
 #[serde(crate = "near_sdk::serde")]
@@ -39,8 +39,8 @@ pub struct PlayerMetadata {
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct EvenOddContract {
     owner: ValidAccountId,
-    cash: Token,
-    ticket: Ticket,
+    cash: AccountId,
+    ticket: AccountId,
     players_array: Vec<AccountId>,
     players: UnorderedMap<AccountId, PlayerMetadata>,
     total_bet_amount: usize,
@@ -51,16 +51,12 @@ pub struct EvenOddContract {
 #[near_bindgen]
 impl EvenOddContract {
     #[init]
-    pub fn constructor() -> Self {
-        use near_sdk::env::signer_account_id;
+    pub fn constructor(dealer: AccountId, cash: AccountId, ticket: AccountId) -> Self {
         assert!(!env::state_exists(), "The contract is already initialized");
         Self {
             owner: signer_account_id().try_into().unwrap(),
-            cash: Token::new_default_meta(
-                signer_account_id().try_into().unwrap(),
-                TOTAL_SUPPLY.into(),
-            ),
-            ticket: Ticket::new_default_meta(signer_account_id().try_into().unwrap()),
+            cash,
+            ticket,
             players_array: Vec::new(),
             players: UnorderedMap::new(b"players".to_vec()),
             total_bet_amount: 0,
@@ -71,7 +67,6 @@ impl EvenOddContract {
 
     #[payable]
     pub fn transfer(&mut self, amount: U128) {
-        // assert!()
         use near_sdk::env::{current_account_id, predecessor_account_id};
         self.cash.ft_resolve_transfer(
             predecessor_account_id().try_into().unwrap(),
@@ -81,61 +76,72 @@ impl EvenOddContract {
     }
 
     pub fn withdraw(&mut self, amount: U128) {
-        use near_sdk::env::{current_account_id, predecessor_account_id};
         assert_gt!(u128::from(amount), 0, "Amount must be not zero!");
-        assert_le!(u128::from(amount), u128::from(self.get_dealer_balance()), "Amount exceeds balance");
+        assert_le!(
+            u128::from(amount),
+            u128::from(self.get_dealer_balance()),
+            "Amount exceeds balance"
+        );
         self.cash.ft_resolve_transfer(
-            current_account_id().try_into().unwrap(), 
-            predecessor_account_id().try_into().unwrap(), 
-            amount
+            current_account_id().try_into().unwrap(),
+            predecessor_account_id().try_into().unwrap(),
+            amount,
         );
 
         env::log(
-            format!(" Withdraw from {} to {} with amount is {} ", 
-                String::from(current_account_id()), 
+            format!(
+                " Withdraw from {} to {} with amount is {} ",
+                String::from(current_account_id()),
                 String::from(predecessor_account_id()),
                 u128::from(amount)
-            ).as_bytes()
+            )
+            .as_bytes(),
         );
     }
 
     pub fn bet(&self, is_even: bool, amount: U128) {
-        // let account_balance = env::account_balance();
-        // let token_id = 
-        let balance = u128::from(Ticket::default().nft_supply_for_owner(predecessor_account_id().try_into().unwrap()));
+        let balance =
+            u128::from(ticket.nft_supply_for_owner(predecessor_account_id().try_into().unwrap()));
         assert_gt!(balance, 0, "You need to buy a ticket to play this game");
+        assert_gt!(
+            env::attached_deposit(),
+            PRICE_PER_BET,
+            "You should attach token at least"
+        );
         // assert_le!(env::block_timestamp(), self.ticket.get_expired_time(token_id), "Your ticket is expired");
-        assert!(!self.is_already_bet(predecessor_account_id()) == true, "Already bet");
-
+        assert!(
+            !self.is_already_bet(predecessor_account_id()) == true,
+            "Already bet"
+        );
     }
     pub fn roll_dice(&mut self) {
-        assert_eq!(self.owner, env::predecessor_account_id().try_into().unwrap(), "Only owner can call roll dice");
+        assert_eq!(
+            self.owner,
+            env::predecessor_account_id().try_into().unwrap(),
+            "Only owner can call roll dice"
+        );
         assert_gt!(self.total_bet_amount_per_roll, 0, "No one place bet");
 
         let dice_number_1 = self.generate_random_number();
         let dice_number_2 = self.generate_random_number();
 
-        let is_even = (dice_number_1 + dice_number_2) %2 == 0;
+        let is_even = (dice_number_1 + dice_number_2) % 2 == 0;
 
         env::log(
-            format!(" Roll id: {}, Roll dice: {} - {} with resul is {}", 
-              self.roll_id, 
-              dice_number_1,
-              dice_number_2,
-                is_even
-            ).as_bytes()
+            format!(
+                " Roll id: {}, Roll dice: {} - {} with resul is {}",
+                self.roll_id, dice_number_1, dice_number_2, is_even
+            )
+            .as_bytes(),
         );
         for i in 0..self.players_array.len() {
             if self.players.get(&self.players_array[i]).unwrap().is_even == is_even {
                 self.transfer_money(
-                    self.players_array[i].clone(), 
+                    self.players_array[i].clone(),
                     U128::from(
-                        u128::from(
-                            self.players.get(
-                                &self.players_array[i]
-                            ).unwrap().bet_amount
-                        )*2
-                    )
+                        u128::from(self.players.get(&self.players_array[i]).unwrap().bet_amount)
+                            * 2,
+                    ),
                 );
             }
         }
@@ -164,18 +170,22 @@ impl EvenOddContract {
 
     #[private]
     pub fn transfer_money(&mut self, account: AccountId, amount: U128) {
-       
-        if account.clone().eq(&String::from(self.owner.clone())) {
+        if account.clone().eq(&AccountId::from(self.owner.clone())) {
             self.cash.ft_resolve_transfer(
-                current_account_id().try_into().unwrap(), 
-                predecessor_account_id().try_into().unwrap(), 
-                amount
+                current_account_id().try_into().unwrap(),
+                predecessor_account_id().try_into().unwrap(),
+                amount,
             );
         } else {
             self.cash.ft_resolve_transfer(
-                current_account_id().try_into().unwrap(), 
-                self.players.get(&account).unwrap().player.try_into().unwrap(), 
-                amount
+                current_account_id().try_into().unwrap(),
+                self.players
+                    .get(&account)
+                    .unwrap()
+                    .player
+                    .try_into()
+                    .unwrap(),
+                amount,
             );
         }
     }
