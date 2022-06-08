@@ -1,7 +1,7 @@
 use more_asserts::{assert_gt, assert_le};
 use near_contract_standards::fungible_token::core::FungibleTokenCore;
 use near_contract_standards::fungible_token::resolver::FungibleTokenResolver;
-use near_contract_standards::non_fungible_token::enumeration::NonFungibleTokenEnumeration;
+// use near_contract_standards::non_fungible_token::enumeration::NonFungibleTokenEnumeration;
 // use near_contract_standards::non_fungible_token::enumeration::NonFungibleTokenEnumeration;
 use near_sdk::env::{current_account_id, predecessor_account_id, signer_account_id};
 use std::convert::TryInto;
@@ -12,20 +12,37 @@ use near_sdk::collections::UnorderedMap;
 
 use near_sdk::json_types::{ValidAccountId, U128};
 use near_sdk::serde::{Deserialize, Serialize};
-use near_sdk::{env, near_bindgen, setup_alloc, AccountId, Balance, PanicOnDefault};
+use near_sdk::{
+    env, ext_contract, near_bindgen, setup_alloc, AccountId, Balance, PanicOnDefault, Promise,
+    PromiseOrValue,
+};
 use rand::Rng;
 
+pub mod core;
 pub mod core_impl;
+pub mod internal;
 pub mod ticket;
 pub mod token;
+use crate::core::*;
+use crate::core_impl::*;
+use crate::internal::*;
+use crate::ticket::*;
+use crate::token::*;
 
-use core_impl::*;
-use ticket::*;
-use token::*;
 setup_alloc!();
 
-const TOTAL_SUPPLY: Balance = 1_000_000_000;
 const PRICE_PER_BET: Balance = 10_000_000_000_000_000_000_000; // 0.01 NEAR
+const TOTAL_SUPPLY: Balance = 1_000_000_000_000_000;
+
+// #[ext_contract[ext_cash_resolver]]
+// pub trait TokenCashResolver {
+//     fn ft_resolve_transfer(
+//         &mut self,
+//         sender_id: ValidAccountId,
+//         receiver_id: ValidAccountId,
+//         amount: U128,
+//     ) -> U128;
+// }
 
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize, PanicOnDefault)]
 #[serde(crate = "near_sdk::serde")]
@@ -51,12 +68,13 @@ pub struct EvenOddContract {
 #[near_bindgen]
 impl EvenOddContract {
     #[init]
-    pub fn constructor(dealer: AccountId, cash: AccountId, ticket: AccountId) -> Self {
+    pub fn constructor(_dealer: AccountId, _cash: AccountId, _ticket: AccountId) -> Self {
+        use near_sdk::env::signer_account_id;
         assert!(!env::state_exists(), "The contract is already initialized");
         Self {
             owner: signer_account_id().try_into().unwrap(),
-            cash,
-            ticket,
+            cash: _cash,
+            ticket: _ticket,
             players_array: Vec::new(),
             players: UnorderedMap::new(b"players".to_vec()),
             total_bet_amount: 0,
@@ -66,13 +84,38 @@ impl EvenOddContract {
     }
 
     #[payable]
-    pub fn transfer(&mut self, amount: U128) {
+    pub fn transfer(&mut self, amount: U128) -> Promise {
         use near_sdk::env::{current_account_id, predecessor_account_id};
-        self.cash.ft_resolve_transfer(
+        ext_cash::ft_resolve_transfer(
             predecessor_account_id().try_into().unwrap(),
             current_account_id().try_into().unwrap(),
             amount,
-        );
+            &self.cash,
+            amount.0,
+            FT_TRANSFER_GAS,
+        )
+        .then(ext_self::ft_transfer_callback(
+            amount,
+            predecessor_account_id().clone(),
+            &env::current_account_id(),
+            NO_DEPOSIT,
+            FT_TRANSFER_GAS,
+        ))
+
+        // ext_ft_contract::ft_transfer(
+        //     account_id.clone(),
+        //     U128(current_reward),
+        //     Some("Staking contract harvest".to_string()),
+        //     &self.ft_contract_id,
+        //     DEPOSIT_ONE_YOCTO,
+        //     FT_TRANSFER_GAS
+        // ).then(ext_self::ft_transfer_callback(
+        //     U128(current_reward),
+        //     account_id.clone(),
+        //     &env::current_account_id(),
+        //     NO_DEPOSIT,
+        //     FT_HARVEST_CALLBACK_GAS
+        // ))
     }
 
     pub fn withdraw(&mut self, amount: U128) {
@@ -100,8 +143,14 @@ impl EvenOddContract {
     }
 
     pub fn bet(&self, is_even: bool, amount: U128) {
-        let balance =
-            u128::from(ticket.nft_supply_for_owner(predecessor_account_id().try_into().unwrap()));
+        // let account_balance = env::account_balance();
+        // let token_id =
+        let balance = ext_ticket::nft_supply_for_owner(
+            predecessor_account_id().try_into().unwrap(),
+            &current_account_id().try_into().unwrap(),
+            0,
+            25_000_000_000_000,
+        );
         assert_gt!(balance, 0, "You need to buy a ticket to play this game");
         assert_gt!(
             env::attached_deposit(),
@@ -154,8 +203,8 @@ impl EvenOddContract {
         }
         false
     }
-    pub fn get_dealer_balance(&self) -> U128 {
-        self.cash.ft_balance_of(self.owner.clone())
+    pub fn get_dealer_balance(&self) -> Promise {
+        ext_cash::ft_balance_of(self.owner.clone(), &self.cash, NO_DEPOSIT, FT_TRANSFER_GAS)
     }
 
     pub fn get_bet_amount_of(&self, account: AccountId) -> U128 {
@@ -170,14 +219,17 @@ impl EvenOddContract {
 
     #[private]
     pub fn transfer_money(&mut self, account: AccountId, amount: U128) {
-        if account.clone().eq(&AccountId::from(self.owner.clone())) {
-            self.cash.ft_resolve_transfer(
+        if account.clone().eq(&String::from(self.owner.clone())) {
+            ext_cash::ft_resolve_transfer(
                 current_account_id().try_into().unwrap(),
                 predecessor_account_id().try_into().unwrap(),
                 amount,
+                &self.cash,
+                NO_DEPOSIT,
+                FT_TRANSFER_GAS,
             );
         } else {
-            self.cash.ft_resolve_transfer(
+            ext_cash::ft_resolve_transfer(
                 current_account_id().try_into().unwrap(),
                 self.players
                     .get(&account)
@@ -186,6 +238,9 @@ impl EvenOddContract {
                     .try_into()
                     .unwrap(),
                 amount,
+                &self.cash,
+                NO_DEPOSIT,
+                FT_TRANSFER_GAS,
             );
         }
     }
