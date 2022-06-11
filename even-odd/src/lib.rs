@@ -2,27 +2,27 @@ use more_asserts::{assert_gt, assert_le};
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::UnorderedMap;
 use near_sdk::env::{current_account_id, predecessor_account_id, signer_account_id};
-use near_sdk::json_types::{ValidAccountId, U128};
+use near_sdk::json_types::U128;
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{
     env, ext_contract, near_bindgen, setup_alloc, AccountId, Balance, PanicOnDefault, Promise,
-    PromiseOrValue,
+    PromiseOrValue, PromiseResult,
 };
 use rand::Rng;
 use std::convert::TryInto;
 
-pub mod core;
 pub mod core_impl;
+pub mod enumeration;
 pub mod internal;
-pub mod ticket;
-pub mod token;
-use crate::core::*;
+pub mod util;
+
 use crate::core_impl::*;
+use crate::enumeration::*;
 use crate::internal::*;
-use crate::ticket::*;
-use crate::token::*;
+use crate::util::*;
 
 setup_alloc!();
+
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize, PanicOnDefault)]
 #[serde(crate = "near_sdk::serde")]
 pub struct PlayerMetadata {
@@ -34,14 +34,14 @@ pub struct PlayerMetadata {
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct EvenOddContract {
-    owner: ValidAccountId,
+    owner: AccountId,
     cash: AccountId,
     ticket: AccountId,
     players_array: Vec<AccountId>,
     players: UnorderedMap<AccountId, PlayerMetadata>,
-    total_bet_amount: usize,
-    total_bet_amount_per_roll: usize,
-    roll_id: usize,
+    total_bet_amount: u128,
+    total_bet_amount_per_roll: u128,
+    roll_id: u32,
 }
 
 #[near_bindgen]
@@ -50,7 +50,7 @@ impl EvenOddContract {
     pub fn constructor(_dealer: AccountId, _cash: AccountId, _ticket: AccountId) -> Self {
         assert!(!env::state_exists(), "The contract is already initialized");
         Self {
-            owner: signer_account_id().try_into().unwrap(),
+            owner: signer_account_id(),
             cash: _cash,
             ticket: _ticket,
             players_array: Vec::new(),
@@ -61,51 +61,40 @@ impl EvenOddContract {
         }
     }
 
+    // deposit for paid fee create account info to store in blockkchain contract
     #[payable]
-    pub fn transfer(&mut self, amount: U128) -> Promise {
-        ext_cash::ft_resolve_transfer(
-            predecessor_account_id().try_into().unwrap(),
-            current_account_id().try_into().unwrap(),
-            amount,
-            &self.cash,
-            amount.0,
-            FT_TRANSFER_GAS,
-        )
-        .then(ext_self::ft_transfer_callback(
-            amount,
-            predecessor_account_id().clone(),
-            &env::current_account_id(),
-            NO_DEPOSIT,
-            FT_TRANSFER_GAS,
-        ))
+    pub fn storage_deposit(&mut self, account_id: Option<AccountId>) {
+        assert_at_least_one_yocto();
+        let account = account_id.unwrap_or_else(|| predecessor_account_id());
 
-        // ext_ft_contract::ft_transfer(
-        //     account_id.clone(),
-        //     U128(current_reward),
-        //     Some("Staking contract harvest".to_string()),
-        //     &self.ft_contract_id,
-        //     DEPOSIT_ONE_YOCTO,
-        //     FT_TRANSFER_GAS
-        // ).then(ext_self::ft_transfer_callback(
-        //     U128(current_reward),
-        //     account_id.clone(),
-        //     &env::current_account_id(),
-        //     NO_DEPOSIT,
-        //     FT_HARVEST_CALLBACK_GAS
-        // ))
+        let player_metadata: Option<PlayerMetadata> = self.players.get(&account);
+
+        if player_metadata.is_some() {
+            refund_deposit(0);
+        } else {
+            let before_storage_usage = env::storage_usage();
+            self.internal_create_account(account.clone());
+            let after_storage_usage = env::storage_usage();
+
+            refund_deposit(after_storage_usage - before_storage_usage);
+        }
     }
-
+    #[payable]
     pub fn withdraw(&mut self, amount: U128) {
         assert_gt!(u128::from(amount), 0, "Amount must be not zero!");
         assert_le!(
-            u128::from(amount),
-            u128::from(self.get_dealer_balance()),
+            amount.0,
+            self.get_dealer_balance().0,
             "Amount exceeds balance"
         );
-        self.cash.ft_resolve_transfer(
-            current_account_id().try_into().unwrap(),
-            predecessor_account_id().try_into().unwrap(),
+
+        ext_ft_contract::ft_transfer(
+            predecessor_account_id(),
             amount,
+            Some(String::from("Withdraw !")),
+            self.cash.clone(),
+            amount.0,
+            FT_TRANSFER_GAS,
         );
 
         env::log(
@@ -118,70 +107,131 @@ impl EvenOddContract {
             .as_bytes(),
         );
     }
+    #[private]
+    pub fn is_have_ticket(&self) -> bool {
+        assert_eq!(
+            env::promise_results_count(),
+            1,
+            "Contract expected a result on the callback"
+        );
+        match env::promise_result(0) {
+            PromiseResult::Successful(_value) => {
+                let value = near_sdk::serde_json::from_slice::<U128>(&_value).unwrap();
+                if value.0 > 0 {
+                    return true;
+                };
+                return false;
+            }
+            _ => false,
+        }
+    }
+    #[private]
+    pub fn have(&self) -> U128 {
+        assert_eq!(
+            env::promise_results_count(),
+            1,
+            "Contract expected a result on the callback"
+        );
+        match env::promise_result(0) {
+            PromiseResult::Successful(result) => {
+                let balance = near_sdk::serde_json::from_slice::<U128>(&result).unwrap();
+                if balance.0 > 0 {
+                    return balance;
+                } else {
+                    return U128(0);
+                }
+            }
+            _ => U128(0),
+        }
+    }
+    pub fn nft_balance_of(&self) -> bool {
+        ext_nft_contract::nft_supply_for_owner(
+            predecessor_account_id(),
+            self.ticket.clone(),
+            NO_DEPOSIT,
+            FT_CALL_GAS,
+        );
 
-    pub fn bet(&self, is_even: bool, amount: U128) {
-        // let account_balance = env::account_balance();
-        // let token_id =
-        let balance = ext_ticket::nft_supply_for_owner(
-            predecessor_account_id().try_into().unwrap(),
-            &current_account_id().try_into().unwrap(),
-            0,
-            25_000_000_000_000,
-        );
-        assert_gt!(balance, 0, "You need to buy a ticket to play this game");
-        assert_gt!(
-            env::attached_deposit(),
-            PRICE_PER_BET,
-            "You should attach token at least"
-        );
+        ext_self::nft_balance_callback(current_account_id(), NO_DEPOSIT, FT_CALL_GAS);
+        self.is_have_ticket()
+    }
+    pub fn bet(&mut self, is_even: bool, amount: U128) {
+        let balance = self.nft_balance_of();
+        assert!(balance, "You need to buy a ticket to play this game");
+
         // assert_le!(env::block_timestamp(), self.ticket.get_expired_time(token_id), "Your ticket is expired");
         assert!(
-            !self.is_already_bet(predecessor_account_id()) == true,
+            !self.is_already_bet(predecessor_account_id()),
             "Already bet"
         );
+
+        let new_player_metadata = PlayerMetadata {
+            bet_amount: amount,
+            player: predecessor_account_id(),
+            is_even,
+        };
+        self.players_array.push(predecessor_account_id());
+        self.players
+            .insert(&predecessor_account_id(), &new_player_metadata);
+        self.total_bet_amount += amount.0;
+        self.total_bet_amount_per_roll += amount.0;
     }
+
     pub fn roll_dice(&mut self) {
-        assert_eq!(
-            self.owner,
-            env::predecessor_account_id().try_into().unwrap(),
-            "Only owner can call roll dice"
-        );
+        assert_at_least_one_yocto();
+        assert_only_owner_access(self.owner.clone());
         assert_gt!(self.total_bet_amount_per_roll, 0, "No one place bet");
 
         let dice_number_1 = self.generate_random_number();
         let dice_number_2 = self.generate_random_number();
 
-        let is_even = (dice_number_1 + dice_number_2) % 2 == 0;
+        let is_even = (&dice_number_1 + &dice_number_2) % 2 == 0;
 
-        env::log(
-            format!(
-                " Roll id: {}, Roll dice: {} - {} with resul is {}",
-                self.roll_id, dice_number_1, dice_number_2, is_even
-            )
-            .as_bytes(),
-        );
         for i in 0..self.players_array.len() {
-            if self.players.get(&self.players_array[i]).unwrap().is_even == is_even {
-                self.transfer_money(
-                    self.players_array[i].clone(),
+            let player_metadata = self.players.get(&self.players_array[i]).unwrap();
+            if player_metadata.is_even == is_even && player_metadata.bet_amount.0 > 0 {
+                self.transfer_cash(
+                    player_metadata.player,
                     U128::from(
                         u128::from(self.players.get(&self.players_array[i]).unwrap().bet_amount)
                             * 2,
                     ),
                 );
+                // Allow admin can bet and control flow
             }
         }
         self.reset_board();
         self.roll_id = self.roll_id + 1;
+
+        env::log(
+            format!(
+                " Roll id: {}, Roll dice: {} - {} with result is {}",
+                self.roll_id, &dice_number_1, &dice_number_2, is_even
+            )
+            .as_bytes(),
+        );
     }
+
     pub fn is_already_bet(&self, account: AccountId) -> bool {
         if u128::from(self.players.get(&account).unwrap().bet_amount) > 0 {
             return true;
         }
         false
     }
-    pub fn get_dealer_balance(&self) -> Promise {
-        ext_cash::ft_balance_of(self.owner.clone(), &self.cash, NO_DEPOSIT, FT_TRANSFER_GAS)
+
+    pub fn get_dealer_balance(&self) -> U128 {
+        ext_ft_contract::ft_balance_of(
+            self.owner.clone(),
+            self.cash.clone(),
+            NO_DEPOSIT,
+            FT_TRANSFER_GAS,
+        )
+        .then(ext_self::ft_balance_callback(
+            current_account_id(),
+            NO_DEPOSIT,
+            FT_CALL_GAS,
+        ));
+        self.have()
     }
 
     pub fn get_bet_amount_of(&self, account: AccountId) -> U128 {
@@ -195,37 +245,28 @@ impl EvenOddContract {
     }
 
     #[private]
-    pub fn transfer_money(&mut self, account: AccountId, amount: U128) {
-        if account.clone().eq(&String::from(self.owner.clone())) {
-            ext_cash::ft_resolve_transfer(
-                current_account_id().try_into().unwrap(),
-                predecessor_account_id().try_into().unwrap(),
-                amount,
-                &self.cash,
-                NO_DEPOSIT,
-                FT_TRANSFER_GAS,
-            );
-        } else {
-            ext_cash::ft_resolve_transfer(
-                current_account_id().try_into().unwrap(),
-                self.players
-                    .get(&account)
-                    .unwrap()
-                    .player
-                    .try_into()
-                    .unwrap(),
-                amount,
-                &self.cash,
-                NO_DEPOSIT,
-                FT_TRANSFER_GAS,
-            );
-        }
+    pub fn transfer_cash(&mut self, account: AccountId, amount: U128) {
+        ext_ft_contract::ft_transfer(
+            account.clone(),
+            amount,
+            Some(String::from("Pay reward for players !")),
+            self.cash.clone(),
+            amount.0,
+            FT_TRANSFER_GAS,
+        )
+        .then(ext_self::ft_pay_reward_callback(
+            account.clone(),
+            amount,
+            current_account_id(),
+            NO_DEPOSIT,
+            PAY_REWARD_CALLBACK_GAS,
+        ));
     }
 
     #[private]
     pub fn reset_board(&mut self) {
-        self.players_array = vec![];
         self.total_bet_amount_per_roll = 0;
+        self.internal_set_default();
     }
 
     #[private]
@@ -238,11 +279,11 @@ impl EvenOddContract {
 // mod tests {
 //     use super::*;
 //     use near_sdk::MockedBlockchain;
-//     use near_sdk::json_types::ValidAccountId;
+//     use near_sdk::json_types::AccountId;
 //     use near_sdk::{testing_env};
 //     use near_sdk::test_utils::{accounts, VMContextBuilder};
 
-//     fn get_context(predecessor_account_id: ValidAccountId) -> VMContextBuilder {
+//     fn get_context(predecessor_account_id: AccountId) -> VMContextBuilder {
 //         let mut builder = VMContextBuilder::new();
 //         builder
 //             .current_account_id(accounts(0))

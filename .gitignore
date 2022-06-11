@@ -1,4 +1,9 @@
 ./node_module
 .even-odd/target
 .nft-ticket/target
-.ft-cash/target
+.ft-libs/target
+.nft-libs/target
+.even-odd/Cargo.lock
+.nft-ticket/Cargo.lock
+.ft-libs/Cargo.lock
+.nft-libs/Cargo.lock

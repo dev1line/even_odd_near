@@ -1,0 +1,11 @@
+d:\RUST\rust_even_odd_contract\nft-libs\target\debug\deps\ed25519_dalek-c5596a33b1c72508.rmeta: C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\lib.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\constants.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\keypair.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\errors.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\public.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\secret.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\signature.rs
+
+d:\RUST\rust_even_odd_contract\nft-libs\target\debug\deps\ed25519_dalek-c5596a33b1c72508.d: C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\lib.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\constants.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\keypair.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\errors.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\public.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\secret.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\signature.rs
+
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\lib.rs:
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\constants.rs:
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\keypair.rs:
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\errors.rs:
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\public.rs:
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\secret.rs:
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\ed25519-dalek-1.0.1\src\signature.rs:

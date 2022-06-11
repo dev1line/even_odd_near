@@ -1,0 +1,12 @@
+d:\RUST\rust_even_odd_contract\nft-libs\target\debug\deps\thiserror_impl-695896a4a6b4d098.dll: C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\lib.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\ast.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\attr.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\expand.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\fmt.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\generics.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\prop.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\valid.rs
+
+d:\RUST\rust_even_odd_contract\nft-libs\target\debug\deps\thiserror_impl-695896a4a6b4d098.d: C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\lib.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\ast.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\attr.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\expand.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\fmt.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\generics.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\prop.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\valid.rs
+
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\lib.rs:
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\ast.rs:
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\attr.rs:
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\expand.rs:
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\fmt.rs:
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\generics.rs:
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\prop.rs:
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\thiserror-impl-1.0.31\src\valid.rs:

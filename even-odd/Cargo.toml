@@ -12,7 +12,7 @@ near-sdk = "4.0.0-pre.7"
 near-contract-standards = "4.0.0-pre.7"
 more-asserts = "0.2.2"
 rand = "0.8.5"
-
+getrandom = { version = "0.2", features = ["js"] }
 [profile.release]
 codegen-units = 1
 # Tell rustc to optimize for small code size.

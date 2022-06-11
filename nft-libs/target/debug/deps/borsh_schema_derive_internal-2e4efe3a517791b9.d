@@ -1,0 +1,10 @@
+d:\RUST\rust_even_odd_contract\nft-libs\target\debug\deps\borsh_schema_derive_internal-2e4efe3a517791b9.rmeta: C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-schema-derive-internal-0.9.3\src\lib.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-schema-derive-internal-0.9.3\src\helpers.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-schema-derive-internal-0.9.3\src\enum_schema.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-schema-derive-internal-0.9.3\src\struct_schema.rs
+
+d:\RUST\rust_even_odd_contract\nft-libs\target\debug\deps\libborsh_schema_derive_internal-2e4efe3a517791b9.rlib: C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-schema-derive-internal-0.9.3\src\lib.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-schema-derive-internal-0.9.3\src\helpers.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-schema-derive-internal-0.9.3\src\enum_schema.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-schema-derive-internal-0.9.3\src\struct_schema.rs
+
+d:\RUST\rust_even_odd_contract\nft-libs\target\debug\deps\borsh_schema_derive_internal-2e4efe3a517791b9.d: C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-schema-derive-internal-0.9.3\src\lib.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-schema-derive-internal-0.9.3\src\helpers.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-schema-derive-internal-0.9.3\src\enum_schema.rs C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-schema-derive-internal-0.9.3\src\struct_schema.rs
+
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-schema-derive-internal-0.9.3\src\lib.rs:
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-schema-derive-internal-0.9.3\src\helpers.rs:
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-schema-derive-internal-0.9.3\src\enum_schema.rs:
+C:\Users\nguye\.cargo\registry\src\github.com-1ecc6299db9ec823\borsh-schema-derive-internal-0.9.3\src\struct_schema.rs:

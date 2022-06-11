@@ -133,7 +133,7 @@ mod tests {
 
         // Init contract
         let mut contract = Contract::new_default_metadata(accounts(0).to_string());
-
+        let perpetual_royalties: HashMap<AccountId, u32> = HashMap::new();
         testing_env!(context
             .storage_usage(env::storage_usage())
             .attached_deposit(MINT_STORAGE_COST)
@@ -145,6 +145,7 @@ mod tests {
             token_id.clone(),
             get_sample_metadata(),
             accounts(0).to_string(),
+            Some(perpetual_royalties),
         );
 
         let token = contract.nft_token(token_id.clone()).unwrap();
@@ -159,7 +160,7 @@ mod tests {
         let mut context = get_context(false);
         testing_env!(context.build());
         let mut contract = Contract::new_default_metadata(accounts(0).to_string());
-
+        let perpetual_royalties: HashMap<AccountId, u32> = HashMap::new();
         testing_env!(context
             .storage_usage(env::storage_usage())
             .attached_deposit(MINT_STORAGE_COST)
@@ -170,6 +171,7 @@ mod tests {
             token_id.clone(),
             get_sample_metadata(),
             accounts(0).to_string(),
+            Some(perpetual_royalties),
         );
 
         let token = contract.nft_token(token_id.clone()).unwrap();

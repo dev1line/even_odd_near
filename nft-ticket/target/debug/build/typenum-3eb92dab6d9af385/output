@@ -1,0 +1,2 @@
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=d:\RUST\rust_even_odd_contract\nft-ticket\target\debug\build\typenum-3eb92dab6d9af385\out\consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=d:\RUST\rust_even_odd_contract\nft-ticket\target\debug\build\typenum-3eb92dab6d9af385\out\op.rs
