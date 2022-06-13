@@ -1,0 +1,2 @@
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=/mnt/d/RUST/rust_even_odd_contract/even-odd/target/debug/build/typenum-6628d35eba4160e6/out/consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=/mnt/d/RUST/rust_even_odd_contract/even-odd/target/debug/build/typenum-6628d35eba4160e6/out/op.rs

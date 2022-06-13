@@ -1,0 +1,9 @@
+/mnt/d/RUST/rust_even_odd_contract/even-odd/target/debug/deps/rand_chacha-6548dbfd4c41badc.rmeta: /root/.cargo/registry/src/github.com-1ecc6299db9ec823/rand_chacha-0.2.2/src/lib.rs /root/.cargo/registry/src/github.com-1ecc6299db9ec823/rand_chacha-0.2.2/src/chacha.rs /root/.cargo/registry/src/github.com-1ecc6299db9ec823/rand_chacha-0.2.2/src/guts.rs
+
+/mnt/d/RUST/rust_even_odd_contract/even-odd/target/debug/deps/librand_chacha-6548dbfd4c41badc.rlib: /root/.cargo/registry/src/github.com-1ecc6299db9ec823/rand_chacha-0.2.2/src/lib.rs /root/.cargo/registry/src/github.com-1ecc6299db9ec823/rand_chacha-0.2.2/src/chacha.rs /root/.cargo/registry/src/github.com-1ecc6299db9ec823/rand_chacha-0.2.2/src/guts.rs
+
+/mnt/d/RUST/rust_even_odd_contract/even-odd/target/debug/deps/rand_chacha-6548dbfd4c41badc.d: /root/.cargo/registry/src/github.com-1ecc6299db9ec823/rand_chacha-0.2.2/src/lib.rs /root/.cargo/registry/src/github.com-1ecc6299db9ec823/rand_chacha-0.2.2/src/chacha.rs /root/.cargo/registry/src/github.com-1ecc6299db9ec823/rand_chacha-0.2.2/src/guts.rs
+
+/root/.cargo/registry/src/github.com-1ecc6299db9ec823/rand_chacha-0.2.2/src/lib.rs:
+/root/.cargo/registry/src/github.com-1ecc6299db9ec823/rand_chacha-0.2.2/src/chacha.rs:
+/root/.cargo/registry/src/github.com-1ecc6299db9ec823/rand_chacha-0.2.2/src/guts.rs:
