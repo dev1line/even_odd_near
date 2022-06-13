@@ -18,7 +18,10 @@ Exploring The Code
 2. Tests: You can run smart contract tests with the `./test` script. This runs
    standard Rust tests using [cargo] with a `--nocapture` flag so that you
    can see any debug info you print to the console.
-
+3. Some address for deploy testnet:
+   even0dd.wuansantestnet.testnet
+   ft-libs.wuansantestnet.testnet
+   nft-libs.wuansantestnet.testnet
 
   [smart contract]: https://docs.near.org/docs/develop/contracts/overview
   [Rust]: https://www.rust-lang.org/

@@ -34,9 +34,9 @@ pub struct PlayerMetadata {
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct EvenOddContract {
-    owner: AccountId,
-    cash: AccountId,
-    ticket: AccountId,
+    pub owner: AccountId,
+    pub cash: AccountId,
+    pub ticket: AccountId,
     players_array: Vec<AccountId>,
     players: UnorderedMap<AccountId, PlayerMetadata>,
     total_bet_amount: u128,
@@ -275,52 +275,43 @@ impl EvenOddContract {
     }
 }
 
-// #[cfg(all(test, not(target_arch = "wasm32")))]
-// mod tests {
-//     use super::*;
-//     use near_sdk::MockedBlockchain;
-//     use near_sdk::json_types::AccountId;
-//     use near_sdk::{testing_env};
-//     use near_sdk::test_utils::{accounts, VMContextBuilder};
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tests {
+    use super::*;
+    use near_sdk::test_utils::{accounts, VMContextBuilder};
+    use near_sdk::testing_env;
+    use near_sdk::AccountId;
 
-//     fn get_context(predecessor_account_id: AccountId) -> VMContextBuilder {
-//         let mut builder = VMContextBuilder::new();
-//         builder
-//             .current_account_id(accounts(0))
-//             .signer_account_id(predecessor_account_id.clone())
-//             .predecessor_account_id(predecessor_account_id);
-//         builder
-//     }
+    fn get_context(predecessor_account_id: AccountId) -> VMContextBuilder {
+        let mut builder = VMContextBuilder::new();
+        builder
+            .current_account_id(accounts(0))
+            .signer_account_id(predecessor_account_id.clone())
+            .predecessor_account_id(predecessor_account_id);
+        builder
+    }
 
-//     // #[test]
-//     // fn check_update_post() {
-//     //     let mut context = get_context(accounts(0));
-//     //     testing_env!(context.build());
-//     //     let mut contract = Article::default();
-//     //     contract.create_post("howdy".to_string());
-//     //     contract.create_post("sang".to_string());
+    #[test]
+    fn check_constructor() {
+        let mut context = get_context(accounts(0));
+        testing_env!(context.build());
+        let mut contract = EvenOddContract::constructor(accounts(0), accounts(1), accounts(2));
+        println!(
+            "{:?}, {:?}, {:?}",
+            contract.get_owner(),
+            contract.get_cash_address(),
+            contract.get_ticket_address()
+        );
+        assert_eq!(contract.get_owner(), accounts(0));
+        assert_eq!(contract.get_cash_address(), accounts(1));
+        assert_eq!(contract.get_ticket_address(), accounts(2));
+    }
 
-//     //     assert_eq!(
-//     //         "sang".to_string(),
-//     //         contract.get_value(1)
-//     //     );
-//     //     let post = Post { id: 1, message: "sangdeptrai".to_owned(), author: env::current_account_id() };
-//     //     contract.update_post(1, &post);
-//     //     assert_eq!(
-//     //         "sangdeptrai".to_string(),
-//     //         contract.get_value(1)
-//     //     );
-
-//     //     testing_env!(context
-//     //         .storage_usage(env::storage_usage())
-//     //         .predecessor_account_id(accounts(0))
-//     //         .build());
-//     //     let is_del = contract.delete_post(1);
-
-//     //     assert_eq!(
-//     //         is_del,
-//     //      true
-//     //     );
-//     // }
-
-// }
+    #[test]
+    #[should_panic(expected = "The contract is not initialized")]
+    fn test_default() {
+        let context = get_context(accounts(3));
+        testing_env!(context.build());
+        let contract = EvenOddContract::default();
+    }
+}
