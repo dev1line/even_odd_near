@@ -22,9 +22,3 @@ Exploring The Code
    even0dd.wuansantestnet.testnet
    ft-libs.wuansantestnet.testnet
    nft-libs.wuansantestnet.testnet
-
-  [smart contract]: https://docs.near.org/docs/develop/contracts/overview
-  [Rust]: https://www.rust-lang.org/
-  [create-near-app]: https://github.com/near/create-near-app
-  [correct target]: https://github.com/near/near-sdk-rs#pre-requisites
-  [cargo]: https://doc.rust-lang.org/book/ch01-03-hello-cargo.html
